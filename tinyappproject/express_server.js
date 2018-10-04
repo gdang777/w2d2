@@ -5,6 +5,10 @@ const port = 8080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+var cookieParser = require('cookie-parser')
+
+app.use(cookieParser());
+
 function generateRandomString() {
  let string = "";
  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -25,23 +29,32 @@ var urlDatabase = {
 app.get("/",(req, res)=>{
     res.send("Hello there!");
 });
-app.get("/urls.json",(req, res)=>{
+app.get("/urls.json",(req, res)=> {
     res.json(urlDatabase);
 });
-app.get('/urls', (req,res)=>{
-    let templatevars = {urls: urlDatabase};
+app.get('/urls', (req,res)=> {
+    let templatevars = {
+        username: req.cookies["username"],
+        urls: urlDatabase
+    };
     res.render('urls_index',templatevars);
 });
 app.get("/urls/new", (req, res) => {
-    res.render("urls_new");
+    var templateVars = {
+        username: req.cookies["username"]
+    }
+    res.render("urls_new", templateVars );
 });
 app.get("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     const longURL = urlDatabase[shortURL];
-    let templateVars = { shortURL: shortURL, longURL: longURL};
+    let templateVars = { 
+        username:req.cookies["username"],
+        shortURL: shortURL, longURL: longURL
+    };
     res.render("urls_show", templateVars);  
 });
-app.get("/u/:shortURL",(req,res)=>{
+app.get("/u/:shortURL",(req,res)=> {
     const shortURL = req.params.shortURL;
     // console.log(shortURL,"test1");
     const longUrl = urlDatabase[shortURL];
@@ -57,6 +70,14 @@ app.post('/urls/:id/delete', (req,res)=>{
 app.post('/urls/:id/update', (req,res)=>{
     urlDatabase[req.params.id] = req.body.longUrl
     res.redirect('/urls');
+});
+app.post('/login',(req,res)=>{
+    res.cookie("username",req.body.username);
+    res.redirect('/urls');
+});
+app.post('/logout',(req,res) => {
+   res.clearCookie("username");
+   res.redirect('/urls');
 });
 app.get('/Hello',(req,res)=>{
     res.send("<html><body>Hello <b>World</b></body<html>\n");
