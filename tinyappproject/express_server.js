@@ -43,6 +43,7 @@ app.get("/urls/new", (req, res) => {
     var templateVars = {
         username: req.cookies["username"]
     }
+    console.log("test",req.cookies["username"] );
     res.render("urls_new", templateVars );
 });
 app.get("/urls/:id", (req, res) => {
@@ -66,6 +67,14 @@ app.post('/urls/:id/delete', (req,res)=>{
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
 });
+app.post('/urls', (req,res)=>{
+    var shortURL = generateRandomString();
+    var longURL = req.body.longURL
+    console.log(req.body.longURL);
+    urlDatabase[shortURL] = longURL ;
+    res.redirect('/urls');
+    
+})
 //handling the delete request from the delete button
 app.post('/urls/:id/update', (req,res)=>{
     urlDatabase[req.params.id] = req.body.longUrl
