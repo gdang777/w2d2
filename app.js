@@ -6,7 +6,7 @@ function requestHandler(request, response) {
     if (request.url == "/") {
         response.end("Welcome!");
       } else if (request.url == "/urls") {
-        response.end("www.lighthouselabs.ca\nwww.google.com");
+        response.end("www.lighthouselabs.ca\www.google.com");
       } else {
         response.statusCode = 404;
         response.end("WTF i am not sure");
